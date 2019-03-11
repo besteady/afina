@@ -21,6 +21,7 @@ class SimpleLRU : public Afina::Storage {
 public:
     SimpleLRU(size_t max_size = 1024) 
         : _free_size(max_size)
+        , _max_size(max_size)
         , _lru_head(nullptr)
         , _lru_tail(nullptr) 
     {}
@@ -57,7 +58,7 @@ public:
 private:
     // LRU cache node
     using lru_node = struct lru_node {
-        std::string key;
+        const std::string key;
         std::string value;
         lru_node *prev;
         std::unique_ptr<lru_node> next;
@@ -74,6 +75,7 @@ private:
     // Maximum number of bytes could be stored in this cache.
     // i.e all (keys+values) must be less the _max_size
     std::size_t _free_size;
+    std::size_t _max_size;
     
     // Main storage of lru_nodes, elements in this list ordered descending by "freshness": in the head
     // element that wasn't used for longest time.
@@ -87,6 +89,7 @@ private:
     using rw_string = std::reference_wrapper<const std::string>;
     using rw_lru_node = std::reference_wrapper<lru_node>;
 
+    bool _free_space(std::size_t needed_space);
     bool _push_back(const std::string &key, const std::string &value);
     bool _pop_front();
     bool _delete_node(lru_node *node);

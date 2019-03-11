@@ -19,8 +19,11 @@ using namespace std;
 TEST(StorageTest, PutGet) {
     SimpleLRU storage;
 
+    cout << "Start test..." << endl;
     storage.Put("KEY1", "val1");
+    cout << "key1 put" << endl;
     storage.Put("KEY2", "val2");
+    cout << "key2 put" << endl;
 
     std::string value;
     EXPECT_TRUE(storage.Get("KEY1", value));
