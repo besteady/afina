@@ -89,11 +89,11 @@ private:
     using rw_string = std::reference_wrapper<const std::string>;
     using rw_lru_node = std::reference_wrapper<lru_node>;
 
-    bool _free_space(std::size_t needed_space);
-    bool _push_back(const std::string &key, const std::string &value);
-    bool _pop_front();
-    bool _delete_node(lru_node *node);
-    bool _move_node_to_tail(lru_node *node);
+    bool free_space(std::size_t needed_space);
+    bool push_back(const std::string &key, const std::string &value);
+    bool pop_front();
+    bool delete_node(lru_node *node);
+    bool move_node_to_tail(lru_node *node);
 
 };
 

@@ -89,12 +89,20 @@ void ServerImpl::Stop() {
 
 // See Server.h
 void ServerImpl::Join() {
+
+    if (_cur_workers.load() != 0) {
+        std::unique_lock<std::mutex> lock(_m);
+        while (!_notified) {
+            _cond_var.wait(lock);
+        }
+    }
+
     assert(_thread.joinable());
     _thread.join();
     close(_server_socket);
 }
 
-void ServerImpl::_process_connection(int client_socket) {
+void ServerImpl::process_connection(int client_socket) {
     // Here is connection state
     // - parser: parse state of the stream
     // - command_to_execute: last command parsed out of stream
@@ -262,7 +270,7 @@ void ServerImpl::OnRun() {
             _logger->debug("Start new thread {}\n", client_socket);
             _logger->warn("Start new thread {}\n", client_socket);
 
-            std::thread new_thread(&ServerImpl::_process_connection, this, client_socket);
+            std::thread new_thread(&ServerImpl::process_connection, this, client_socket);
             new_thread.detach();
         } else {
 
@@ -271,13 +279,6 @@ void ServerImpl::OnRun() {
             close(client_socket);
         }
         
-    }
-
-    if (_cur_workers.load() != 0) {
-        std::unique_lock<std::mutex> lock(_m);
-        while (!_notified) {
-            _cond_var.wait(lock);
-        }
     }
 
     // Cleanup on exit...

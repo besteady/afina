@@ -56,7 +56,7 @@ private:
     std::thread _thread;
 
     // process connection
-    void _process_connection(int);
+    void process_connection(int);
 
     // current workers
     std::atomic<int> _cur_workers;
