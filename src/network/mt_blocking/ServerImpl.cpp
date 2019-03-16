@@ -211,9 +211,6 @@ void ServerImpl::_process_connection(int client_socket) {
         if (_cur_workers.load() == 0) {
             _notified = true;
             _cond_var.notify_one();
-        } else {
-            assert(_thread.joinable());
-            _thread.join();
         }
     }
 
